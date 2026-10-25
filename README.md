@@ -90,7 +90,7 @@ python -m pytest tests/test_personal_account.py::TestPersonalAccount::test_go_to
 
 # Генерация Allure-отчёта
 python -m  pytest ./tests --alluredir=allure_results
-allure serve allure-results
+allure serve allure_results
 ```
 
 ## API-эндпоинты для тестов
