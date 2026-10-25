@@ -42,3 +42,11 @@ def authorized_user_driver(driver):
     login_page.wait_for_url_not_contains("/login")
 
     return driver
+
+
+@pytest.fixture
+def make_two_different_orders(authorized_user_driver):
+    order_number1 = helpers.make_new_order(authorized_user_driver, index_1=0, index_2=3)
+
+    order_number2 = helpers.make_new_order(authorized_user_driver, index_1=1, index_2=4)
+    return order_number1, order_number2

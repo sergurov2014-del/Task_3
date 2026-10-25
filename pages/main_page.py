@@ -65,9 +65,7 @@ class MainPage(BasePage):
             raise AssertionError(
                 f"Нет ингредиента с индексом {index}: найдено {len(ingredients)}"
             )
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});", ingredients[index]
-        )
+        self.scroll_into_view(ingredients[index])
         self.js_click_element(ingredients[index])
 
     @allure.step("Перетащить ингредиент с индексом {index} в конструктор")
@@ -83,33 +81,17 @@ class MainPage(BasePage):
             )
 
         element = ingredients[index]
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});", element
-        )
+
+        self.scroll_into_view(element)
 
         target = self.wait_until_element_located(loc.CONSTRUCTOR_BASKET)
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});", target
-        )
-
-        js_dnd = """
-            function simulateDragDrop(sourceNode, destinationNode) {
-                var dataTransfer = new DataTransfer();
-                var dragStart = new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
-                sourceNode.dispatchEvent(dragStart);
-                var dropEvent = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
-                destinationNode.dispatchEvent(dropEvent);
-                var dragEnd = new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
-                sourceNode.dispatchEvent(dragEnd);
-            }
-            simulateDragDrop(arguments[0], arguments[1]);
-        """
-        self.driver.execute_script(js_dnd, element, target)
+        self.scroll_into_view(target)
+        self.js_for_drag_and_drop(element, target)
 
     @allure.step("Получить счётчик ингредиента с индексом {index}")
     def get_ingredient_counter(self, index=0):
-        #Возвращает текст счётчика внутри карточки ингредиента с указанным индексом.
-        #Если счётчика нет (ингредиент ещё не добавляли) — возвращает '0'.
+        # Возвращает текст счётчика внутри карточки ингредиента с указанным индексом.
+        # Если счётчика нет (ингредиент ещё не добавляли) — возвращает '0'.
         try:
             ingredients = self.wait_for_elements(loc.ALL_INGEDIENT_CARDS)
         except TimeoutException:

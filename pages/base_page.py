@@ -99,6 +99,8 @@ class BasePage:  # Базовые методы взаимодействия с �
         element = self.wait.until(EC.presence_of_element_located(locator))
         return element.get_attribute(attribute)
 
+    ###########################РАЗНЫЕ ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ#############################################
+
     def is_element_visible(self, locator):
         # ждёт один элемент и возвращает один WebElement (первый найденный)
         return self.wait.until(EC.visibility_of_element_located(locator))
@@ -110,5 +112,28 @@ class BasePage:  # Базовые методы взаимодействия с �
     def wait_until_text_in_element(self, locator, text):
         return self.wait.until(EC.text_to_be_present_in_element(locator, text))
 
+    @allure.step("Приводим строковое число к нормализованному виду ")
     def normalize(self, number):
         return str(int(number))
+
+    @allure.step("Скроллим страницу до элемента")
+    def scroll_into_view(self, element):
+        return self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center'});", element
+        )
+
+    @allure.step("Используем js для drag_and_drop")
+    def js_for_drag_and_drop(self, element, target):
+        js_dnd = """
+            function simulateDragDrop(sourceNode, destinationNode) {
+                var dataTransfer = new DataTransfer();
+                var dragStart = new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
+                sourceNode.dispatchEvent(dragStart);
+                var dropEvent = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
+                destinationNode.dispatchEvent(dropEvent);
+                var dragEnd = new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer: dataTransfer });
+                sourceNode.dispatchEvent(dragEnd);
+            }
+            simulateDragDrop(arguments[0], arguments[1]);
+        """
+        return self.driver.execute_script(js_dnd, element, target)

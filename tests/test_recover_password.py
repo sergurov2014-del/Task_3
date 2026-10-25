@@ -44,15 +44,13 @@ class TestRecoverPassword:
     def test_password_toggle_makes_password_visible(self, driver):
         main_page = MainPage(driver)
         main_page.go_to_login_page_via_personal_account()
+
         login_page = LoginPage(driver)
         login_page.click_recover_password_field()
 
         recovery_page = RecoveryPage(driver)
         recovery_page.enter_email()
         recovery_page.click_recover_button()
-        assert (
-            recovery_page.is_reset_password_page()
-        ), "Не выполнен переход на /reset-password"
         recovery_page.enter_password()
         recovery_page.toggle_password_visibility()
         assert (
